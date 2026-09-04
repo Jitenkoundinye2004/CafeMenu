@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 export type CustomizationOption = {
   id: string;
@@ -55,8 +56,8 @@ export const MenuProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const fetchData = async () => {
       try {
         const [catsRes, itemsRes] = await Promise.all([
-          fetch('http://localhost:5000/api/categories'),
-          fetch('http://localhost:5000/api/menu')
+          fetch(`${API_BASE_URL}/api/categories`),
+          fetch(`${API_BASE_URL}/api/menu`)
         ]);
         
         if (!catsRes.ok || !itemsRes.ok) throw new Error('Failed to fetch data');

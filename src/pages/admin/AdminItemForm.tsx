@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMenu } from '../../context/MenuContext';
 import { ArrowLeft, Upload, Plus, ChevronDown } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { API_BASE_URL } from '../../config/api';
 
 export const AdminItemForm: React.FC = () => {
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ export const AdminItemForm: React.FC = () => {
   const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return;
     try {
-      const res = await fetch('http://localhost:5000/api/categories', {
+      const res = await fetch(`${API_BASE_URL}/api/categories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newCategoryName.trim() })
@@ -105,7 +106,7 @@ export const AdminItemForm: React.FC = () => {
       payload.append('isVeg', String(formData.isVeg));
       payload.append('image', imageFile);
 
-      const res = await fetch('http://localhost:5000/api/menu', {
+      const res = await fetch(`${API_BASE_URL}/api/menu`, {
         method: 'POST',
         body: payload
       });

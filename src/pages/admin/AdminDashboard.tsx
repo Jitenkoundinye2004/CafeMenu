@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMenu } from '../../context/MenuContext';
 import { Plus, Trash2, LogOut, AlertCircle, X } from 'lucide-react';
+import { API_BASE_URL } from '../../config/api';
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ export const AdminDashboard: React.FC = () => {
     if (!itemToDelete) return;
     setIsDeleting(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/menu/${itemToDelete.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/menu/${itemToDelete.id}`, {
         method: 'DELETE'
       });
       if (res.ok) {
