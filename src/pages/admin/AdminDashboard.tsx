@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMenu } from '../../context/MenuContext';
 import { Plus, Trash2, LogOut, AlertCircle, X } from 'lucide-react';
-import { cn } from '../../utils/cn';
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
