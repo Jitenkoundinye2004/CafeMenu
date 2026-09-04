@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Welcome } from './pages/Welcome';
 import { Home } from './pages/Home';
 import { MenuCategory } from './pages/MenuCategory';
 import { ProductDetail } from './pages/ProductDetail';
@@ -23,7 +22,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const hideBottomNavPaths = ['/product', '/admin'];
   
   const hideHeader = location.pathname === '/' || hideHeaderPaths.some(path => location.pathname.startsWith(path));
-  const hideBottomNav = location.pathname === '/' || hideBottomNavPaths.some(path => location.pathname.startsWith(path));
+  const hideBottomNav = hideBottomNavPaths.some(path => location.pathname.startsWith(path));
 
   return (
     <div className="flex flex-col min-h-screen bg-background font-sans relative overflow-hidden w-full">
@@ -43,8 +42,7 @@ const App: React.FC = () => {
         <div className="bg-background min-h-screen flex w-full">
           <Layout>
             <Routes>
-              <Route path="/" element={<Welcome />} />
-              <Route path="/menu" element={<Home />} />
+              <Route path="/" element={<Home />} />
               <Route path="/menu/:categoryId" element={<MenuCategory />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/search" element={<Search />} />

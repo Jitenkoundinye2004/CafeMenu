@@ -8,15 +8,15 @@ export const BottomNav: React.FC = () => {
   const navigate = useNavigate();
 
   const navItems = [
-    { icon: Home, label: 'Home', path: '/menu' },
+    { icon: Home, label: 'Home', path: '/' },
     { icon: LayoutGrid, label: 'Menu', path: '/menu/coffee' },
     { icon: Search, label: 'Search', path: '/search' },
-    { icon: Info, label: 'About', path: '/info' },
+    { icon: Info, label: 'Info', path: '/info' }
   ];
 
   const isActive = (path: string) => {
-    if (path === '/menu' && location.pathname === '/menu') return true;
-    if (path !== '/menu' && location.pathname.startsWith(path)) return true;
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
     return false;
   };
 
