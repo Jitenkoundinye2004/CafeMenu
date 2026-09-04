@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #543b35;
+  --color-secondary: #d2bab0;
+  --color-accent: #c48b71;
+  --color-background: #fdf8f6;
+  --color-surface: #ffffff;
+  
+  --color-cafebrown-50: #fdf8f6;
+  --color-cafebrown-100: #f2e8e5;
+  --color-cafebrown-200: #eaddd7;
+  --color-cafebrown-300: #e0cec7;
+  --color-cafebrown-400: #d2bab0;
+  --color-cafebrown-500: #a38a80;
+  --color-cafebrown-600: #7a5c53;
+  --color-cafebrown-700: #543b35;
+  --color-cafebrown-800: #382622;
+  --color-cafebrown-900: #261916;
+  --color-cafebrown-950: #150d0a;
+
+  --font-serif: "Playfair Display", serif;
+  --font-sans: Inter, sans-serif;
+
+  --animate-slide-up: slideUp 0.3s ease-out;
+  --animate-fade-in: fadeIn 0.3s ease-out;
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-gray-900, #111827);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    color: var(--color-primary);
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+}
