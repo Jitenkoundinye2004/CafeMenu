@@ -3,26 +3,20 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
 const MenuCategory = require('./models/MenuCategory');
 const MenuItem = require('./models/MenuItem');
 
 const app = express();
-app.use(cors());
-app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Configure Multer for image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp for uniqueness
-  }
-});
+// Important for Vercel: Enable CORS for all domains or your specific Vercel frontend domain
+app.use(cors());
+// Increase JSON payload size limits for Base64 images
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// Configure Multer to use memory storage (perfect for Vercel Serverless)
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 mongoose.connect(process.env.MONGODB_URI)
@@ -41,7 +35,6 @@ app.get('/api/categories', async (req, res) => {
 
 app.post('/api/categories', async (req, res) => {
   try {
-    // Auto-generate ID if not provided (e.g. "new-category")
     const id = req.body.name.toLowerCase().replace(/\s+/g, '-');
     const newCategory = new MenuCategory({
       id: id,
@@ -64,20 +57,21 @@ app.get('/api/menu', async (req, res) => {
   }
 });
 
-// Add a menu item with image upload
+// Add a menu item with Base64 image upload
 app.post('/api/menu', upload.single('image'), async (req, res) => {
   try {
     const data = req.body || {};
-    const catId = data.categoryId || 'x';
+    const catId = data.categoryId || 'unknown';
     
     // Auto-generate unique ID
     const uniqueId = catId.charAt(0) + '-' + Math.random().toString(36).substring(2, 8);
     
     let imageUrl = data.imageUrl || '';
+    
+    // If a file was uploaded, convert it to Base64
     if (req.file) {
-      // If deployed, this should be a full URL. For local, relative is fine but absolute is better for React.
-      // We'll return the relative path and let the frontend prefix it, or just return absolute localhost.
-      imageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
+      const base64 = req.file.buffer.toString('base64');
+      imageUrl = `data:${req.file.mimetype};base64,${base64}`;
     }
 
     const newItem = new MenuItem({
@@ -86,7 +80,7 @@ app.post('/api/menu', upload.single('image'), async (req, res) => {
       name: data.name,
       price: Number(data.price),
       description: data.description,
-      isVeg: data.isVeg === 'true', // FormData sends booleans as strings
+      isVeg: data.isVeg === 'true',
       imageUrl: imageUrl,
       rating: 4.5
     });
@@ -110,7 +104,18 @@ app.delete('/api/menu/:id', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Health check route for Vercel
+app.get('/', (req, res) => {
+  res.send('Brew & Bean API is running gracefully.');
 });
+
+// For Vercel, we need to export the app
+module.exports = app;
+
+// Only start the server if not running in Vercel serverless environment
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
