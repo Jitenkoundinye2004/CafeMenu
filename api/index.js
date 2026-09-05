@@ -15,7 +15,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://koundinyejiten_db_user:JGDce36cRa39NiVn@cluster0.8ozrmoz.mongodb.net/';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://koundinyejiten_db_user:JGDce36cRa39NiVn@cluster0.8ozrmoz.mongodb.net/brewandbean?retryWrites=true&w=majority';
 
 let cached = global.mongoose;
 if (!cached) {
