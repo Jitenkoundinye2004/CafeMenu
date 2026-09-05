@@ -20,8 +20,17 @@ export const MenuCategory: React.FC = () => {
     }
   }, [categoryId, categories.length]);
 
-  if (loading) {
-    return <div className="p-8 text-center mt-20 text-cafebrown-500">Loading category...</div>;
+  if (loading && categories.length === 0) {
+    return (
+      <div className="p-4 space-y-4">
+        <div className="h-10 w-full rounded-full bg-cafebrown-200 animate-pulse" />
+        <div className="space-y-4 pt-4">
+          {[1, 2, 3, 4].map((n) => (
+            <div key={n} className="h-28 rounded-2xl bg-cafebrown-100 animate-pulse border border-cafebrown-200" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   const activeCategory = categories.find(c => c.id === categoryId);

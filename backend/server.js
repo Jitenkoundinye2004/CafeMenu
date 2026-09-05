@@ -9,24 +9,62 @@ const MenuItem = require('./models/MenuItem');
 
 const app = express();
 
-// Important for Vercel: Enable CORS for all domains or your specific Vercel frontend domain
+// Enable CORS for all domains
 app.use(cors());
+
 // Increase JSON payload size limits for Base64 images
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// Configure Multer to use memory storage (perfect for Vercel Serverless)
+// Configure Multer for in-memory buffer
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// Serverless-optimized MongoDB connection caching
+let cached = global.mongoose;
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectDB() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    };
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, opts).then((m) => m);
+  }
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+  return cached.conn;
+}
+
+// Middleware to ensure DB connection before handling request
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+    res.status(500).json({ error: 'Database connection failed: ' + err.message });
+  }
+});
 
 // --- CATEGORY ROUTES ---
 app.get('/api/categories', async (req, res) => {
   try {
-    const categories = await MenuCategory.find();
+    // Enable Edge / Browser caching (60 seconds fresh, 5 minutes stale revalidate)
+    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+    const categories = await MenuCategory.find().lean();
     res.json(categories);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -50,7 +88,8 @@ app.post('/api/categories', async (req, res) => {
 // --- MENU ROUTES ---
 app.get('/api/menu', async (req, res) => {
   try {
-    const items = await MenuItem.find();
+    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+    const items = await MenuItem.find().lean();
     res.json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -67,8 +106,6 @@ app.post('/api/menu', upload.single('image'), async (req, res) => {
     const uniqueId = catId.charAt(0) + '-' + Math.random().toString(36).substring(2, 8);
     
     let imageUrl = data.imageUrl || '';
-    
-    // If a file was uploaded, convert it to Base64
     if (req.file) {
       const base64 = req.file.buffer.toString('base64');
       imageUrl = `data:${req.file.mimetype};base64,${base64}`;
@@ -109,10 +146,8 @@ app.get('/', (req, res) => {
   res.send('Brew & Bean API is running gracefully.');
 });
 
-// For Vercel, we need to export the app
 module.exports = app;
 
-// Only start the server if not running in Vercel serverless environment
 if (require.main === module) {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {

@@ -8,13 +8,12 @@ export const Home: React.FC = () => {
   const navigate = useNavigate();
   const { categories, menuItems, loading } = useMenu();
 
-  if (loading) {
-    return <div className="p-8 text-center mt-20 text-cafebrown-500">Loading menu...</div>;
-  }
-
-  // Derived specials (e.g. specific IDs or just random ones for demo)
+  // Derived specials: bestsellers, or items matching IDs, or simply first 4 items
   const specialIds = ['c-8', 'p-2', 'd-3', 'b-6'];
-  const specials = menuItems.filter(item => specialIds.includes(item.id));
+  let specials = menuItems.filter(item => item.isBestseller || specialIds.includes(item.id));
+  if (specials.length === 0 && menuItems.length > 0) {
+    specials = menuItems.slice(0, 4);
+  }
 
   return (
     <div className="pb-24 w-full">
@@ -32,7 +31,10 @@ export const Home: React.FC = () => {
           </p>
           <div className="flex gap-3">
             <button 
-              onClick={() => navigate('/menu/coffee')}
+              onClick={() => {
+                const firstCat = categories[0]?.id || 'coffee';
+                navigate(`/menu/${firstCat}`);
+              }}
               className="bg-accent text-white px-5 py-2.5 rounded-xl font-medium text-sm active:scale-95 transition-transform"
             >
               Explore Menu
@@ -50,25 +52,33 @@ export const Home: React.FC = () => {
       {/* Categories */}
       <div className="mt-8 px-4">
         <h3 className="font-serif font-bold text-xl text-primary mb-4">Categories</h3>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 snap-x">
-          {categories.map((cat, index) => {
-            const isActive = index === 0;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => navigate(`/menu/${cat.id}`)}
-                className={cn(
-                  "snap-start shrink-0 px-5 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap active:scale-95",
-                  isActive 
-                    ? "bg-primary text-white" 
-                    : "bg-surface text-cafebrown-700 border border-cafebrown-200 hover:bg-cafebrown-50"
-                )}
-              >
-                {cat.name}
-              </button>
-            );
-          })}
-        </div>
+        {loading && categories.length === 0 ? (
+          <div className="flex gap-2 overflow-x-hidden pb-4">
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} className="h-9 w-24 rounded-full bg-cafebrown-200 animate-pulse shrink-0" />
+            ))}
+          </div>
+        ) : (
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 snap-x">
+            {categories.map((cat, index) => {
+              const isActive = index === 0;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => navigate(`/menu/${cat.id}`)}
+                  className={cn(
+                    "snap-start shrink-0 px-5 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap active:scale-95",
+                    isActive 
+                      ? "bg-primary text-white" 
+                      : "bg-surface text-cafebrown-700 border border-cafebrown-200 hover:bg-cafebrown-50"
+                  )}
+                >
+                  {cat.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Trending / Specials */}
@@ -76,11 +86,19 @@ export const Home: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-serif font-bold text-xl text-primary">Popular Now</h3>
         </div>
-        <div className="flex flex-col gap-4">
-          {specials.map((item) => (
-            <ProductCard key={item.id} item={item} />
-          ))}
-        </div>
+        {loading && menuItems.length === 0 ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="h-28 rounded-2xl bg-cafebrown-100 animate-pulse border border-cafebrown-200" />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {specials.map((item) => (
+              <ProductCard key={item.id} item={item} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
