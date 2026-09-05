@@ -1,7 +1,6 @@
 import React from 'react';
 import type { MenuItem } from '../context/MenuContext';
 import { useNavigate } from 'react-router-dom';
-import { Star, Clock } from 'lucide-react';
 
 interface ProductCardProps {
   item: MenuItem;
@@ -43,11 +42,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
         </div>
 
         <div className="flex items-center justify-between mt-3">
-          <span className="font-bold text-primary">₹{item.price}</span>
-          <div className="flex items-center gap-2 text-[10px] text-cafebrown-500 font-medium">
-            <span className="flex items-center gap-0.5"><Star size={12} className="text-yellow-500 fill-yellow-500" /> {item.rating}</span>
-            <span className="flex items-center gap-0.5"><Clock size={12} /> {item.prepTime}</span>
-          </div>
+          <span className="font-bold text-primary text-base">₹{item.price}</span>
         </div>
       </div>
     </div>

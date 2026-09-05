@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMenu } from '../context/MenuContext';
-import { Star, Clock, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 export const ProductDetail: React.FC = () => {
@@ -80,17 +80,15 @@ export const ProductDetail: React.FC = () => {
       </div>
 
       <div className="px-5 py-6">
-        <div className="flex items-start justify-between mb-2">
+        <div className="flex items-start justify-between mb-3">
           <h1 className="font-serif text-3xl font-bold text-primary">{item.name}</h1>
           <div className={`w-4 h-4 mt-2 rounded-full border ${item.isVeg ? 'border-green-600' : 'border-red-600'} flex items-center justify-center shrink-0`}>
             <div className={`w-2 h-2 rounded-full ${item.isVeg ? 'bg-green-600' : 'bg-red-600'}`} />
           </div>
         </div>
         
-        <div className="flex items-center gap-4 text-sm text-cafebrown-600 mb-4">
-          <span className="flex items-center gap-1 font-bold text-primary"><Star size={16} className="text-yellow-500 fill-yellow-500" /> {item.rating}</span>
-          <span className="flex items-center gap-1"><Clock size={16} /> {item.prepTime}</span>
-          <span className="font-bold text-primary ml-auto text-xl">₹{totalPrice}</span>
+        <div className="flex items-center justify-between mb-4">
+          <span className="font-bold text-primary text-2xl">₹{totalPrice}</span>
         </div>
 
         <p className="text-cafebrown-700 leading-relaxed mb-6">{item.description}</p>
