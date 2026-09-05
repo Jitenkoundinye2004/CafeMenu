@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const categorySchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
@@ -7,4 +7,5 @@ const categorySchema = new mongoose.Schema({
   icon: { type: String }
 });
 
-module.exports = mongoose.models.MenuCategory || mongoose.model('MenuCategory', categorySchema);
+const MenuCategory = mongoose.models.MenuCategory || mongoose.model('MenuCategory', categorySchema);
+export default MenuCategory;

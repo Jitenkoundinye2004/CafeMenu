@@ -1,10 +1,10 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const multer = require('multer');
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import multer from 'multer';
 
-const MenuCategory = require('./models/MenuCategory');
-const MenuItem = require('./models/MenuItem');
+import MenuCategory from './models/MenuCategory.js';
+import MenuItem from './models/MenuItem.js';
 
 const app = express();
 
@@ -135,4 +135,4 @@ app.get('/api', (req, res) => {
   res.send('Brew & Bean API is running on Vercel.');
 });
 
-module.exports = app;
+export default app;

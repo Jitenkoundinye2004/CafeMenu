@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const customizationOptionSchema = new mongoose.Schema({
   id: { type: String, required: true },
@@ -28,4 +28,5 @@ const menuItemSchema = new mongoose.Schema({
   customizations: [customizationGroupSchema]
 });
 
-module.exports = mongoose.models.MenuItem || mongoose.model('MenuItem', menuItemSchema);
+const MenuItem = mongoose.models.MenuItem || mongoose.model('MenuItem', menuItemSchema);
+export default MenuItem;
